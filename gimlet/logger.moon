@@ -1,4 +1,4 @@
-class Logger
-	new: =>
+Logger = ->
+	->
 
 {:Logger}

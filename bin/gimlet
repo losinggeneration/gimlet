@@ -1,0 +1,36 @@
+#!/usr/bin/lua
+-- Based on mercury's launcher
+-- Copyright 2009 Daniele Alessandri
+-- Copyright 2014 Harley Laue
+
+pcall(require, 'luarocks.loader')
+cli = require 'cliargs'
+xavante = require 'xavante'
+wsapi_xavante = require 'wsapi.xavante'
+
+cli:set_name("gimlet")
+cli:add_argument("module", "path to the Gimlet module")
+cli:add_option("-p, --port=PORT", "port to listen on", "8080")
+
+opts, msg = cli:parse()
+if opts == nil then
+	os.exit(1)
+end
+
+local app = opts.module:gsub('^(.-)%.lua$', '%1')
+local port = opts.port
+
+xavante.HTTP{
+	server = {host = '127.0.0.1', port = port},
+
+	defaultHost = {
+		rules = {
+			{
+				match = { "^/(.-)$" },
+				with = wsapi_xavante.makeHandler(app)
+			}
+		}
+	}
+}
+
+xavante.start()

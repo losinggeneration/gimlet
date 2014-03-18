@@ -1,3 +1,6 @@
 #VIM files
 *~
 .*.swp
+
+#Lua files generated my moonc
+*.lua

@@ -3,6 +3,7 @@ import mixin from require "moon"
 import Logger from require "gimlet.Logger"
 import Router from require "gimlet.Router"
 import Static from require "gimlet.Static"
+import run from require "gimlet.init"
 
 validate_handler = (handler) ->
 	error "Gimlet handler must be a function" if type(handler) != "function"
@@ -25,6 +26,7 @@ class Gimlet
 		@_handlers = table.insert @_handlers, handler
 
 	run: =>
+		run @
 
 class Classic
 	new: =>

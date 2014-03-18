@@ -44,3 +44,5 @@ class Router
 		add_route '404', handler
 
 	handle: =>
+
+{:Route, :Router}

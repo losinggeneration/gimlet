@@ -2,10 +2,9 @@
 -- Copyright 2014 Leaf Corcoran
 -- The run function is basically lapis.serve
 
-import Gimlet, Classic from require "gimlet.gimlet"
 import dispatch from require "gimlet.dispatcher"
 
-gimlet_cache = {}
+export gimlet_cache = gimlet_cache or {}
 
 run = (gimlet_cls) ->
 	gimlet = gimlet_cache[gimlet_cls]

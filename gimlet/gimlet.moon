@@ -1,8 +1,8 @@
-import mixin from require "moon"
+import is_object, mixin from require "moon"
 
-import Logger from require "gimlet.Logger"
-import Router from require "gimlet.Router"
-import Static from require "gimlet.Static"
+import Logger from require "gimlet.logger"
+import Router from require "gimlet.router"
+import Static from require "gimlet.static"
 import run from require "gimlet.init"
 
 validate_handler = (handler) ->
@@ -11,6 +11,7 @@ validate_handler = (handler) ->
 class Gimlet
 	new: =>
 		@action = ->
+		@_handlers = {}
 
 	handlers: (...) =>
 		@_handlers = {}
@@ -23,7 +24,7 @@ class Gimlet
 
 	use: (handler) =>
 		validate_handler handler
-		@_handlers = table.insert @_handlers, handler
+		table.insert @_handlers, handler
 
 	run: =>
 		run @
@@ -35,6 +36,6 @@ class Classic
 
 		@use Logger!
 		@use Static "public"
-		@action @router.handle
+		@action handle
 
 {:Gimlet, :Classic}

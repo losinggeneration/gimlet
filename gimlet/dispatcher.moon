@@ -1,6 +1,11 @@
-if ngx != nil
-	import dispatch from require "gimlet.backend.nginx"
-else
-	import dispatch from require "gimlet.backend.wsapi"
+-- We want this cached to avoid multiple hits to the dispatcher
+export gimlet_dispatch = gimlet_dispatch or nil
 
-{:dispatch}
+return gimlet_dispatch if gimlet_dispatch
+
+if ngx
+	gimlet_dispatch = require "gimlet.backend.nginx"
+else
+	gimlet_dispatch = require "gimlet.backend.wsapi"
+
+gimlet_dispatch

@@ -4,21 +4,32 @@
 -- Copyright 2014 Harley Laue
 
 pcall(require, 'luarocks.loader')
+lfs = require 'lfs'
 cli = require 'cliargs'
 xavante = require 'xavante'
 wsapi_xavante = require 'wsapi.xavante'
 
-cli:set_name("gimlet")
-cli:add_argument("module", "path to the Gimlet module")
-cli:add_option("-p, --port=PORT", "port to listen on", "8080")
+cli:set_name('gimlet')
+cli:add_argument('module', 'path to the Gimlet module')
+cli:add_option('-p, --port=PORT', 'port to listen on', '8080')
+cli:add_flag('-r, --reload', 'reload the code on every request')
 
 opts, msg = cli:parse()
 if opts == nil then
 	os.exit(1)
 end
 
-local app = opts.module:gsub('^(.-)%.lua$', '%1')
+-- Strip .lua if it's there, then ensure it's always there
+local app = opts.module:gsub('^(.-)%.lua$', '%1') .. '.lua'
 local port = opts.port
+local reload = opts.reload
+
+-- For reload to work, we have to use the full path to the file
+-- To do so, we strip the last item off the path and change directories
+lfs.chdir(app:gsub('^(.*)/.-$', '%1'))
+local cwd = lfs.currentdir()
+-- Then can make the full path to app based on the current directory
+app = cwd .. '/' .. app
 
 xavante.HTTP{
 	server = {host = '127.0.0.1', port = port},
@@ -27,7 +38,9 @@ xavante.HTTP{
 		rules = {
 			{
 				match = { "^/(.-)$" },
-				with = wsapi_xavante.makeHandler(app)
+				-- makeHandler(app) was ovbious simpler, but to allow code
+				-- reloading this seems to be what has to be done
+				with = wsapi_xavante.makeGenericHandler(cwd, {filename = app, reload = reload})
 			}
 		}
 	}

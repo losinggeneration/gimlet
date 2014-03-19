@@ -8,6 +8,7 @@ lfs = require 'lfs'
 cli = require 'cliargs'
 xavante = require 'xavante'
 wsapi_xavante = require 'wsapi.xavante'
+require 'moonscript'
 
 cli:set_name('gimlet')
 cli:add_argument('module', 'path to the Gimlet module')
@@ -27,9 +28,11 @@ local reload = opts.reload
 -- For reload to work, we have to use the full path to the file
 -- To do so, we strip the last item off the path and change directories
 lfs.chdir(app:gsub('^(.*)/.-$', '%1'))
+
 local cwd = lfs.currentdir()
+
 -- Then can make the full path to app based on the current directory
-app = cwd .. '/' .. app
+app = cwd .. '/' .. app:gsub('^.*/(.-)$', '%1')
 
 xavante.HTTP{
 	server = {host = '127.0.0.1', port = port},

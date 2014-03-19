@@ -17,31 +17,31 @@ class Router
 		route
 
 	get: (pattern, handler) =>
-		add_route 'GET', pattern, handler
+		@add_route 'GET', pattern, handler
 
 	post: (pattern, handler) =>
-		add_route 'POST', pattern, handler
+		@add_route 'POST', pattern, handler
 
 	put: (pattern, handler) =>
-		add_route 'PUT', pattern, handler
+		@add_route 'PUT', pattern, handler
 
 	delete: (pattern, handler) =>
-		add_route 'DELETE', pattern, handler
+		@add_route 'DELETE', pattern, handler
 
 	patch: (pattern, handler) =>
-		add_route 'PATCH', pattern, handler
+		@add_route 'PATCH', pattern, handler
 
 	options: (pattern, handler) =>
-		add_route 'OPTIONS', pattern, handler
+		@add_route 'OPTIONS', pattern, handler
 
 	head: (pattern, handler) =>
-		add_route 'HEAD', pattern, handler
+		@add_route 'HEAD', pattern, handler
 
 	any: (pattern, handler) =>
-		add_route 'ANY', pattern, handler
+		@add_route 'ANY', pattern, handler
 
 	not_found: (handler) =>
-		add_route '404', handler
+		@add_route '404', handler
 
 	handle: =>
 

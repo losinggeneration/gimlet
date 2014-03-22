@@ -1,8 +1,7 @@
-import Classic from require "gimlet.gimlet"
+-- This provides a default instance of Classic from gimlet.gimlet
+require "gimlet"
 
-c = Classic!
-
-c\get "/hello-world", ->
+get "/hello-world", ->
 	"Hello World!"
 
-c\run!
+run!

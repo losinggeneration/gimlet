@@ -6,7 +6,7 @@ import dispatch from require "gimlet.dispatcher"
 
 export gimlet_cache = gimlet_cache or {}
 
-run = (gimlet_cls) ->
+runner = (gimlet_cls) ->
 	gimlet = gimlet_cache[gimlet_cls]
 
 	unless gimlet
@@ -21,4 +21,4 @@ run = (gimlet_cls) ->
 
 	dispatch gimlet
 
-{ :run }
+{ :runner }

@@ -23,7 +23,7 @@ class Route
 		return nil
 
 	handle: (params, response) =>
-		error "route handle"
+		response\write handler! for handler in *@handlers
 
 class Router
 	new: =>

@@ -13,12 +13,10 @@ dispatch = (gimlet) ->
 			headers = {["Content-Type"]: gimlet.content_type}
 
 		req = request.new env
-		res = response.new env
+		res = response.new 200, headers
 
-		stub = ->
-			coroutine.yield gimlet\action res, req.method, req.path_info
-
-		200, headers, coroutine.wrap(stub)
+		gimlet\action res, req.method, req.path_info
+		res\finish!
 
 	if gimlet.cgi
 		import run from require "wsapi.cgi"

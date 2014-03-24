@@ -1,6 +1,7 @@
 import is_object, mixin from require "moon"
 
 import Logger from require "gimlet.logger"
+import Recovery from require "gimlet.recovery"
 import Router from require "gimlet.router"
 import Static from require "gimlet.static"
 import runner from require "gimlet.init"
@@ -44,6 +45,7 @@ class Classic
 		mixin self, Router
 
 		@use Logger!
+		@use Recovery!
 		@use Static "public"
 		@action @handle
 

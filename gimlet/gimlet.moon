@@ -5,13 +5,11 @@ import Recovery from require "gimlet.recovery"
 import Router from require "gimlet.router"
 import Static from require "gimlet.static"
 import runner from require "gimlet.init"
-
-validate_handler = (handler) ->
-	error "Gimlet handler must be a function" if type(handler) != "function"
+import validate_handler from require "gimlet.utils"
 
 class Gimlet
 	new: =>
-		@action = ->
+		@action = =>
 		@_handlers = {}
 	
 	-- Sets the entire middleware table with the given handlers.
@@ -24,7 +22,7 @@ class Gimlet
 
 	-- Sets the handler that will be called after the middleware has been invoked.
 	-- This is set to Router in Classic
-	action: (handler) =>
+	set_action: (handler) =>
 		validate_handler handler
 		@action = handler
 
@@ -47,6 +45,6 @@ class Classic
 		@use Logger!
 		@use Recovery!
 		@use Static "public"
-		@action @handle
+		@set_action @handle
 
 {:Gimlet, :Classic}

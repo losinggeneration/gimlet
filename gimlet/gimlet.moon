@@ -12,20 +12,29 @@ class Gimlet
 	new: =>
 		@action = ->
 		@_handlers = {}
-
+	
+	-- Sets the entire middleware table with the given handlers.
+	-- This will clear any current middleware handlers.
+	-- error will be inoked if any handler is not a callable function.
 	handlers: (...) =>
 		@_handlers = {}
 		for _, h in pairs {...}
 			@use h
 
+	-- Sets the handler that will be called after the middleware has been invoked.
+	-- This is set to Router in Classic
 	action: (handler) =>
 		validate_handler handler
 		@action = handler
 
+	-- Use adds a middleware handler to the stack.
+	-- Midleware handlers are invoked in the order that they are added.
+	-- error is invoked if the handler is not a callable function.
 	use: (handler) =>
 		validate_handler handler
 		table.insert @_handlers, handler
 
+	-- Run the application
 	run: =>
 		runner @
 
@@ -36,6 +45,6 @@ class Classic
 
 		@use Logger!
 		@use Static "public"
-		@action handle
+		@action @handle
 
 {:Gimlet, :Classic}

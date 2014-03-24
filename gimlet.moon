@@ -1,4 +1,3 @@
-import runner from require "gimlet.init"
 import Classic from require "gimlet.gimlet"
 
 classic = Classic!
@@ -13,7 +12,7 @@ export use = (handler) ->
 	classic\use handler
 
 export run = ->
-	runner classic
+	classic\run!
 
 export add_route = (method, pattern, handler) ->
 	classic\add_route pattern, handler

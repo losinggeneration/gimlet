@@ -15,17 +15,26 @@ class Route
 
 		-- Get a list of named parameters
 		tmp_params = {}
+		-- The maximum index match of the pattern
+		tmp_params_max = 0
 		for i, n in string.gmatch pattern, '():([^/#?]+)' do
 			tmp_params[i] = n
+			tmp_params_max = i if i > tmp_params_max
 
 		-- Get a list of numbered parameters
 		idx = 1
 		for i in string.gmatch pattern, '()%*%*' do
 			tmp_params[i] = idx
+			tmp_params_max = i if i > tmp_params_max
 			idx += 1
 
+		-- fill out the table so ipairs works across the table
+		empty = {}
+		for i=1, tmp_params_max
+			tmp_params[i] = empty if tmp_params[i] == nil
+
 		-- Squash the parameters into the correct order
-		@params = [ n for _, n in pairs tmp_params ]
+		@params = [ n for n in *tmp_params when n != empty ]
 
 		-- Escape some valid parts of the url
 		@str_match = string.gsub pattern, '[-.]', '%%%1'

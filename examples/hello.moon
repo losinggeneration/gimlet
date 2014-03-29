@@ -7,4 +7,7 @@ get "/", ->
 get "/hello-world", ->
 	"Hello World!"
 
+get "/:name/**", (params) ->
+	string.format "name=%s,**=%s", params.name, params[1]
+
 run!

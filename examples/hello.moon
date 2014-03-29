@@ -7,7 +7,7 @@ get "/", ->
 get "/hello-world", ->
 	"Hello World!"
 
-get "/:name/**", (params) ->
-	string.format "name=%s,**=%s", params.name, params[1]
+get "/:name/**/**", (params) ->
+	string.format "name=%s,**(1)=%s,**(2)=%s", params.name, params[1], params[2]
 
 run!

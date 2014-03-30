@@ -6,14 +6,13 @@
 pcall(require, 'luarocks.loader')
 lfs = require 'lfs'
 cli = require 'cliargs'
-xavante = require 'xavante'
-wsapi_xavante = require 'wsapi.xavante'
 require 'moonscript'
 
 cli:set_name('gimlet')
 cli:add_argument('module', 'path to the Gimlet module')
 cli:add_option('-p, --port=PORT', 'port to listen on', '8080')
 cli:add_flag('-r, --reload', 'reload the code on every request')
+cli:add_flag('-x, --xavante', 'Use Lua based Xavante HTTP server', false)
 
 opts, msg = cli:parse()
 if opts == nil then
@@ -34,19 +33,60 @@ local cwd = lfs.currentdir()
 -- Then can make the full path to app based on the current directory
 app = cwd .. '/' .. app:gsub('^.*/(.-)$', '%1')
 
-xavante.HTTP{
-	server = {host = '127.0.0.1', port = port},
 
-	defaultHost = {
-		rules = {
-			{
-				match = { "^/(.-)$" },
-				-- makeHandler(app) was ovbious simpler, but to allow code
-				-- reloading this seems to be what has to be done
-				with = wsapi_xavante.makeGenericHandler(cwd, {filename = app, reload = reload})
+if opts.xavante then
+	xavante = require 'xavante'
+	wsapi_xavante = require 'wsapi.xavante'
+
+	xavante.HTTP{
+		server = {host = '127.0.0.1', port = port},
+
+		defaultHost = {
+			rules = {
+				{
+					match = { "^/(.-)$" },
+					-- makeHandler(app) was ovbious simpler, but to allow code
+					-- reloading this seems to be what has to be done
+					with = wsapi_xavante.makeGenericHandler(cwd, {filename = app, reload = reload})
+				}
 			}
 		}
 	}
+
+	xavante.start()
+else
+	local cache
+	if reload then
+		cache = "on"
+	else
+		cache = "off"
+	end
+	-- OpenResty
+	cfg_filename = os.tmpname()
+	cfg = io.open(cfg_filename, 'w')
+	cfg:write(string.format([[worker_processes  1;
+error_log stderr notice;
+daemon off;
+
+events {
+    worker_connections 1024;
 }
 
-xavante.start()
+http {
+    server {
+        listen %s;
+        lua_code_cache %s;
+
+        location / {
+            default_type text/html;
+            set $_url "";
+            content_by_lua_file "%s";
+        }
+    }
+}]], port, cache, app))
+	cfg:flush()
+	lfs.mkdir(cwd .. '/logs')
+	os.execute(string.format([[/usr/local/openresty/nginx/sbin/nginx -p "%s" -c "%s"]], cwd, cfg_filename))
+	os.remove(cfg_filename)
+end
+

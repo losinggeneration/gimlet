@@ -1,4 +1,4 @@
-import is_object, mixin from require "moon"
+import mixin from require "moon"
 
 import Logger from require "gimlet.logger"
 import Recovery from require "gimlet.recovery"

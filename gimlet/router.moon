@@ -1,4 +1,5 @@
 import validate_handler from require "gimlet.utils"
+import encode from require "cjson"
 
 class Route
 	new: (method, pattern, handlers) =>
@@ -62,7 +63,16 @@ class Route
 		return nil
 
 	handle: (params, response) =>
-		response\write handler(params) for handler in *@handlers
+		for handler in *@handlers
+			options, output = handler(params)
+			if type(options) == 'string'
+				response\write options
+			else
+				response\set_options options
+				if output == nil and options.json != nil
+					response\write encode options.json
+				else
+					response\write output
 
 class Router
 	new: =>

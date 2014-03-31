@@ -15,7 +15,14 @@ dispatch = (gimlet) ->
 		req = request.new env
 		res = response.new 200, headers
 
-		gimlet\action res, req.method, req.path_info
+		resWrap = class
+			write: (...) =>
+				res\write ...
+
+			set_options: (options) =>
+				headers["Content-Type"] = options["Content-Type"] if options["Content-Type"]
+
+		gimlet\action resWrap!, req.method, req.path_info
 		res\finish!
 
 	if gimlet.cgi

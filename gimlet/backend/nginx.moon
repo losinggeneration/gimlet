@@ -7,9 +7,11 @@ dispatch = (gimlet) ->
 	import p from require "moon"
 
 	res = class
-		new: =>
 		write: (...) =>
 			ngx.print ...
+
+		set_options: (options) =>
+			ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
 
 	gimlet\action res!, ngx.req.get_method!, ngx.var.request_uri
 

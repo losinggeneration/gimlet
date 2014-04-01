@@ -38,12 +38,11 @@ class Gimlet
 		runner @
 
 class Classic
-	new: =>
+	new: (log = io.stdout) =>
 		mixin self, Gimlet
 		mixin self, Router
 
-		@use Logger!
-		@use Recovery!
+		@use Logger log
 		@use Static "public"
 		@set_action @handle
 

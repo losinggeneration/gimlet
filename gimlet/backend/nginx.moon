@@ -4,8 +4,6 @@ dispatch = (gimlet) ->
 	else
 		ngx.header["Content-Type"] = gimlet.content_type
 
-	import p from require "moon"
-
 	res = class
 		write: (...) =>
 			ngx.print ...
@@ -13,6 +11,34 @@ dispatch = (gimlet) ->
 		set_options: (options) =>
 			ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
 
-	gimlet\action res!, ngx.req.get_method!, ngx.var.request_uri
+		status: =>
+			ngx.status
+
+	req = class
+		new: =>
+			@url_path = ngx.var.request_uri
+			@method = ngx.req.get_method!
+
+	utils = class
+		now: ->
+			ngx.now!
+
+	request = req!
+	response = res!
+
+	coros = [coroutine.create middleware for middleware in *gimlet._handlers]
+	coroutine.resume(middleware, request, response, utils!) for middleware in *coros
+
+	gimlet\action response, request.method, request.url_path
+
+	c = true
+	while c
+		ngx.update_time!
+		c = false
+		for middleware in *coros
+			switch coroutine.status(middleware)
+				when "suspended"
+					coroutine.resume middleware
+					c = true
 
 {:dispatch}

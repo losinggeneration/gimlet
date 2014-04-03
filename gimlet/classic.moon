@@ -1,47 +1,47 @@
-import Classic from require "gimlet.gimlet"
+import Classic from require "gimlet.init"
 
 classic = Classic!
 
-export handlers = (...) ->
+handlers = (...) ->
 	classic\handlers ...
 
-export action = (handler) ->
+action = (handler) ->
 	classic\action handler
 
-export use = (handler) ->
+use = (handler) ->
 	classic\use handler
 
-export run = ->
+run = ->
 	classic\run!
 
-export add_route = (method, pattern, handler) ->
+add_route = (method, pattern, handler) ->
 	classic\add_route pattern, handler
 
-export get = (pattern, handler) ->
+get = (pattern, handler) ->
 	classic\get pattern, handler
 
-export post = (pattern, handler) ->
+post = (pattern, handler) ->
 	classic\post pattern, handler
 
-export put = (pattern, handler) ->
+put = (pattern, handler) ->
 	classic\put pattern, handler
 
-export delete = (pattern, handler) ->
+delete = (pattern, handler) ->
 	classic\delete pattern, handler
 
-export patch = (pattern, handler) ->
+patch = (pattern, handler) ->
 	classic\patch pattern, handler
 
-export options = (pattern, handler) ->
+options = (pattern, handler) ->
 	classic\options pattern, handler
 
-export head = (pattern, handler) ->
+head = (pattern, handler) ->
 	classic\head pattern, handler
 
-export any = (pattern, handler) ->
+any = (pattern, handler) ->
 	classic\any pattern, handler
 
-export not_found = (handler) ->
+not_found = (handler) ->
 	classic\not_found pattern, handler
 
 {

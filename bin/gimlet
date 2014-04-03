@@ -75,6 +75,7 @@ events {
 }
 
 http {
+    lua_package_path '?/init.lua;;';
     server {
         listen %s;
         lua_code_cache %s;

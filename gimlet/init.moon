@@ -24,7 +24,6 @@ runner = (gimlet_cls) ->
 import mixin from require "moon"
 
 import Logger from require "gimlet.logger"
-import Recovery from require "gimlet.recovery"
 import Router from require "gimlet.router"
 import Static from require "gimlet.static"
 import validate_handler from require "gimlet.utils"

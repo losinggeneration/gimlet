@@ -19,15 +19,16 @@ dispatch = (gimlet) ->
 			@url_path = ngx.var.request_uri
 			@method = ngx.req.get_method!
 
-	utils = class
+	util = class
 		now: ->
 			ngx.now!
 
 	request = req!
 	response = res!
+	utils = util!
 
 	coros = [coroutine.create middleware for middleware in *gimlet._handlers]
-	coroutine.resume(middleware, request, response, utils!) for middleware in *coros
+	coroutine.resume middleware, :request, :response, :utils for middleware in *coros
 
 	gimlet\action response, request.method, request.url_path
 
@@ -38,7 +39,9 @@ dispatch = (gimlet) ->
 		for middleware in *coros
 			switch coroutine.status(middleware)
 				when "suspended"
-					coroutine.resume middleware
+					coroutine.resume middleware, :request, :response, :utils
 					c = true
+
+	response\status!
 
 {:dispatch}

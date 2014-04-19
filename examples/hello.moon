@@ -7,10 +7,10 @@ classic.get "/", ->
 classic.get "/hello-world", ->
 	"Hello World!"
 
-classic.get "/:name", (params) ->
-	string.format "name=%s", params.name
+classic.get "/:name", (p) ->
+	string.format "name=%s", p.params.name
 
-classic.get "/:name/**/**", (params) ->
-	string.format "name=%s,**(1)=%s,**(2)=%s", params.name, params[1], params[2]
+classic.get "/:name/**/**", (p) ->
+	string.format "name=%s,**(1)=%s,**(2)=%s", p.params.name, p.params[1], p.params[2]
 
 classic.run!

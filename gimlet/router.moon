@@ -121,7 +121,7 @@ class Router
 		for route in *@routes
 			params = route\match method, path
 			if params
-				route\handle params, response
+				route\handle :params, response
 				return
 
 		-- No routes matched, 404

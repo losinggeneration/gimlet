@@ -1,5 +1,4 @@
--- We want this cached to avoid multiple hits to the dispatcher
-gimlet_dispatch = nil
+local gimlet_dispatch
 
 if ngx
 	gimlet_dispatch = require "gimlet.backend.nginx"

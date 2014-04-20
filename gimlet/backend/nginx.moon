@@ -27,10 +27,15 @@ dispatch = (gimlet) ->
 	response = res!
 	utils = util!
 
-	coros = [coroutine.create middleware for middleware in *gimlet._handlers]
-	coroutine.resume middleware, :request, :response, :utils for middleware in *coros
+	mapped = gimlet._mapped
+	mapped.request = request
+	mapped.response = response
+	mapped.utils = utils
 
-	gimlet\action response, request.method, request.url_path
+	coros = [coroutine.create middleware for middleware in *gimlet._handlers]
+	coroutine.resume middleware, mapped for middleware in *coros
+
+	gimlet\action mapped, request.method, request.url_path
 
 	c = true
 	while c
@@ -39,7 +44,7 @@ dispatch = (gimlet) ->
 		for middleware in *coros
 			switch coroutine.status(middleware)
 				when "suspended"
-					coroutine.resume middleware, :request, :response, :utils
+					coroutine.resume middleware, mapped
 					c = true
 
 	response\status!

@@ -32,6 +32,7 @@ class Gimlet
 	new: =>
 		@action = =>
 		@_handlers = {}
+		@_mapped = {}
 
 	-- Sets the entire middleware table with the given handlers.
 	-- This will clear any current middleware handlers.
@@ -53,6 +54,9 @@ class Gimlet
 	use: (handler) =>
 		validate_handler handler
 		table.insert @_handlers, handler
+
+	map: (name, value) =>
+		@_mapped[name] = value
 
 	-- Run the application
 	run: =>

@@ -44,19 +44,23 @@ any = (pattern, handler) ->
 not_found = (handler) ->
 	classic\not_found pattern, handler
 
+map = (name, value) ->
+	classic\map name, value
+
 {
-	:handlers,
-	:action,
-	:use,
-	:run,
-	:add_route,
-	:get,
-	:post,
-	:put,
-	:delete,
-	:patch,
-	:options,
-	:head,
-	:any,
-	:not_found,
+	:handlers
+	:action
+	:use
+	:run
+	:add_route
+	:get
+	:post
+	:put
+	:delete
+	:patch
+	:options
+	:head
+	:any
+	:not_found
+	:map
 }

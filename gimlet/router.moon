@@ -62,17 +62,17 @@ class Route
 
 		return nil
 
-	handle: (params, response) =>
+	handle: (mapped) =>
 		for handler in *@handlers
-			options, output = handler(params)
+			options, output = handler(mapped)
 			if type(options) == 'string'
-				response\write options
+				mapped.response\write options
 			else
-				response\set_options options
+				mapped.response\set_options options
 				if output == nil and options.json != nil
-					response\write encode options.json
+					mapped.response\write encode options.json
 				else
-					response\write output
+					mapped.response\write output
 
 class Router
 	new: =>
@@ -117,11 +117,12 @@ class Router
 	-- @param response Should have a \write method for writting to the response
 	-- @param method the HTTP method to check for a match. Assumed to be all uppercase letters
 	-- @param path the path portion of the URL to check for a match
-	handle: (response, method, path) =>
+	handle: (mapped, method, path) =>
 		for route in *@routes
 			params = route\match method, path
 			if params
-				route\handle :params, response
+				mapped.params = params
+				route\handle mapped
 				return
 
 		-- No routes matched, 404

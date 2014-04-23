@@ -11,6 +11,8 @@ require 'moonscript'
 cli:set_name('gimlet')
 cli:add_argument('module', 'path to the Gimlet module')
 cli:add_option('-p, --port=PORT', 'port to listen on', '8080')
+cli:add_option('-wp, --worker_processes=WORKER_PROCESSES', 'Number of nginx worker_processes in production mode', '2')
+cli:add_option('-wc, --worker_connections=WORKER_CONNECTIONS', 'Number of nginx worker_connections', '1024')
 cli:add_flag('-r, --reload', 'reload the code on every request', false)
 cli:add_flag('-x, --xavante', 'Use Lua based Xavante HTTP server', false)
 
@@ -23,6 +25,8 @@ end
 local app = opts.module:gsub('^(.-)%.lua$', '%1') .. '.lua'
 local port = opts.port
 local reload = opts.reload
+local worker_processes = opts.worker_processes
+local worker_connections = opts.worker_connections
 
 -- For reload to work, we have to use the full path to the file
 -- To do so, we strip the last item off the path and change directories
@@ -54,13 +58,12 @@ if opts.xavante then
 
 	xavante.start()
 else
-	local cache, workers
+	local cache
 	if reload then
 		cache = "off"
-		workers = 1
+		worker_processes = 1
 	else
 		cache = "on"
-		workers = 16
 	end
 
 	-- OpenResty
@@ -71,10 +74,11 @@ error_log stderr notice;
 daemon off;
 
 events {
-    worker_connections 1024;
+    worker_connections %d;
 }
 
 http {
+    variables_hash_max_size 1024;
     lua_package_path '?/init.lua;;';
     server {
         listen %s;
@@ -86,7 +90,7 @@ http {
             content_by_lua_file "%s";
         }
     }
-}]], workers, port, cache, app))
+}]], worker_processes, worker_connections, port, cache, app))
 	cfg:flush()
 	lfs.mkdir(cwd .. '/logs')
 	os.execute(string.format([[/usr/local/openresty/nginx/sbin/nginx -p "%s" -c "%s"]], cwd, cfg_filename))

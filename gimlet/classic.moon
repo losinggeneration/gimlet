@@ -41,8 +41,8 @@ head = (pattern, handler) ->
 any = (pattern, handler) ->
 	classic\any pattern, handler
 
-not_found = (handler) ->
-	classic\not_found pattern, handler
+not_found = (...) ->
+	classic\not_found ...
 
 map = (name, value) ->
 	classic\map name, value

@@ -17,6 +17,9 @@ run = ->
 add_route = (method, pattern, handler) ->
 	classic\add_route pattern, handler
 
+group = (pattern, fn, handler) ->
+	classic\group pattern, fn, handler
+
 get = (pattern, handler) ->
 	classic\get pattern, handler
 
@@ -53,6 +56,7 @@ map = (name, value) ->
 	:use
 	:run
 	:add_route
+	:group
 	:get
 	:post
 	:put

@@ -77,13 +77,30 @@ class Route
 class Router
 	new: =>
 		@routes = {}
+		@groups = {}
 		@not_founds = {}
 
 	add_route: (method, pattern, handler) =>
-		route = Route method, pattern, {handler}
+		if #@groups > 0
+			group_pattern = ""
+			h = {}
+			for g in *@groups
+				group_pattern ..= g.pattern
+				table.insert h, g.handler
+
+			pattern = group_pattern .. pattern
+			table.insert h, handler
+			handler = h
+
+		handler = {handler} unless type(handler) == 'table'
+		route = Route method, pattern, handler
 		route\validate!
 		table.insert @routes, route
 		route
+
+	group: (pattern, fn, handler) =>
+		table.insert @groups, {:pattern, :handler}
+		fn @
 
 	get: (pattern, handler) =>
 		@add_route 'GET', pattern, handler

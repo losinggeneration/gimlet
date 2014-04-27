@@ -20,4 +20,8 @@ classic.get "/mapped", (p) ->
 classic.get "/:hello", (p) ->
 	"hello " .. p.params.hello
 
+-- Just grab all other GETs (for now)
+classic.get '/**', (p) ->
+	p.params[1]
+
 classic.run!

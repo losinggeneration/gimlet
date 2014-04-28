@@ -20,6 +20,10 @@ dispatch = (gimlet) ->
 		new: =>
 			@url_path = ngx.var.request_uri
 			@method = ngx.req.get_method!
+			@post_args = {}
+			if @method == 'POST'
+				ngx.req.read_body!
+				@post_args = ngx.req.get_post_args!
 
 	util = class
 		now: ->

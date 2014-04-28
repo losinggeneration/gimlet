@@ -29,6 +29,10 @@ dispatch = (gimlet) ->
 			new: =>
 				@url_path = req.path_info
 				@method = req.method
+				@post_args = {}
+				if @method == 'POST'
+					@post_args = req.POST
+
 
 		util = class
 			now: ->

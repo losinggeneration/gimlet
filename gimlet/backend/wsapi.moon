@@ -19,6 +19,7 @@ dispatch = (gimlet) ->
 
 			set_options: (options) =>
 				headers["Content-Type"] = options["Content-Type"] if options["Content-Type"]
+				@status options.status unless options.status == nil
 
 			status: (s) =>
 				res.status = s unless s == nil

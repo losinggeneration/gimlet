@@ -1,5 +1,4 @@
 import validate_handler from require "gimlet.utils"
-import encode from require "cjson"
 
 class Route
 	new: (method, pattern, handlers) =>
@@ -68,11 +67,9 @@ class Route
 			if type(options) == 'string'
 				mapped.response\write options
 			else
-				mapped.response\set_options options
-				if output == nil and options.json != nil
-					mapped.response\write encode options.json
-				else
-					mapped.response\write output
+				mapped.response\set_options options if type(options) == 'table'
+				mapped.response\status options if type(options) == 'number'
+				mapped.response\write output if type(output) == 'string'
 
 class Router
 	new: =>

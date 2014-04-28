@@ -1,6 +1,6 @@
 dispatch = (gimlet) ->
 	unless gimlet.content_type
-		ngx.header["Content-Type"] = "application/json"
+		ngx.header["Content-Type"] = "text/html"
 	else
 		ngx.header["Content-Type"] = gimlet.content_type
 
@@ -10,6 +10,7 @@ dispatch = (gimlet) ->
 
 		set_options: (options) =>
 			ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
+			@status options.status unless options.status == nil
 
 		status: (s) =>
 			ngx.status = s unless s == nil

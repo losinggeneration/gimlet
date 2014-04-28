@@ -1,6 +1,7 @@
 -- Copyright 2014 Harley Laue
 -- Copyright 2014 Leaf Corcoran
 -- The runner function is basically lapis.serve
+-- The mixin function is from moonscript's moon/init.moon
 
 import dispatch from require "gimlet.dispatcher"
 
@@ -21,7 +22,11 @@ runner = (gimlet_cls) ->
 
 	dispatch gimlet
 
-import mixin from require "moon"
+-- mixin class properties into self, call new
+mixin = (cls, ...) =>
+	for key, val in pairs cls.__base
+		self[key] = val if not key\match"^__"
+	cls.__init self, ...
 
 import Logger from require "gimlet.logger"
 import Router from require "gimlet.router"

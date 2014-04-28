@@ -43,7 +43,7 @@ class Route
 		@str_match ..= "/?"
 		-- Change the named parameters to a normal capture
 		@str_match = string.gsub @str_match, ':([^/#?]+)', '([^/#?]+)'
-		-- Change the numbered parameters intor normal captures
+		-- Change the numbered parameters into normal captures
 		@str_match = string.gsub @str_match, '(%*%*)', '([^#?]*)'
 
 	validate: =>

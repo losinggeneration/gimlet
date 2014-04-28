@@ -11,7 +11,8 @@ dispatch = (gimlet) ->
 		set_options: (options) =>
 			ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
 
-		status: =>
+		status: (s) =>
+			ngx.status = s unless s == nil
 			ngx.status
 
 	req = class

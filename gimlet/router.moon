@@ -143,6 +143,14 @@ class Router
 				return
 
 		-- No routes matched, 404
-		error "Not Found. Just erroring for now"
+		mapped.response\status 404
+		for h in *@not_founds
+			if type(h) == 'function'
+				r = h mapped, method, path
+				mapped.response\write r if type(r) == 'string'
+				return
+
+		-- Boring default message
+		mapped.response\write "Not found"
 
 {:Route, :Router}

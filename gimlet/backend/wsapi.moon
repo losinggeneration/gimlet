@@ -20,7 +20,8 @@ dispatch = (gimlet) ->
 			set_options: (options) =>
 				headers["Content-Type"] = options["Content-Type"] if options["Content-Type"]
 
-			status: =>
+			status: (s) =>
+				res.status = s unless s == nil
 				res\status!
 
 		reqWrap = class

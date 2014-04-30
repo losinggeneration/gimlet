@@ -42,10 +42,10 @@ dispatch = (gimlet) ->
 		request = reqWrap!
 		response = resWrap!
 		utils = util!
-		mapped = gimlet._mapped
-		mapped.request = request
-		mapped.response = response
-		mapped.utils = utils
+		mapped = with gimlet._mapped
+			.request = request
+			.response = response
+			.utils = utils
 
 		coros = [coroutine.create middleware for middleware in *gimlet._handlers]
 		coroutine.resume middleware, mapped for middleware in *coros

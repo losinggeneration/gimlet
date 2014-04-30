@@ -19,6 +19,8 @@ dispatch = (gimlet) ->
 
 			set_options: (options) =>
 				headers["Content-Type"] = options["Content-Type"] if options["Content-Type"]
+				unless options.headers == nil
+					headers[k] = v for k, v in pairs options.headers
 				@status options.status unless options.status == nil
 
 			status: (s) =>
@@ -48,9 +50,14 @@ dispatch = (gimlet) ->
 			.utils = utils
 
 		coros = [coroutine.create middleware for middleware in *gimlet._handlers]
-		coroutine.resume middleware, mapped for middleware in *coros
+		local finish
+		for middleware in *coros
+			if finish
+				coroutine.resume middleware, mapped
+			else
+				_, finish = coroutine.resume middleware, mapped
 
-		gimlet\action mapped, req.method, req.path_info
+		gimlet\action mapped, req.method, req.path_info unless finish == false
 
 		c = true
 		while c

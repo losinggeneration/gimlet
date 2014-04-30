@@ -73,7 +73,7 @@ class Classic
 		mixin self, Router
 
 		@use Logger log
-		@use Static "public"
+		@use Static "/public", :log
 		@set_action @handle
 
 {:Gimlet, :Classic}

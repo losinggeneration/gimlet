@@ -18,7 +18,9 @@ dispatch = (gimlet) ->
 
 	req = class
 		new: =>
-			@url_path = ngx.var.request_uri
+			@url_path = ngx.var.uri
+			@request_uri = ngx.var.request_uri
+			@query_params = ngx.req.get_uri_args!
 			@method = ngx.req.get_method!
 			@post_args = {}
 			if @method == 'POST'

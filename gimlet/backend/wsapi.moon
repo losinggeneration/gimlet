@@ -2,7 +2,7 @@ dispatch = (gimlet) ->
 	wsapi_run = (env) ->
 		headers = nil
 		unless gimlet.content_type
-			headers = {["Content-Type"]: "application/json"}
+			headers = {["Content-Type"]: "text/html"}
 		else
 			headers = {["Content-Type"]: gimlet.content_type}
 
@@ -23,16 +23,17 @@ dispatch = (gimlet) ->
 
 			status: (s) =>
 				res.status = s unless s == nil
-				res\status!
+				res.status
 
 		reqWrap = class
 			new: =>
 				@url_path = req.path_info
+				@query_params = req.GET
+				@request_uri = req.path_info .. '/' .. req.query_string
 				@method = req.method
 				@post_args = {}
 				if @method == 'POST'
 					@post_args = req.POST
-
 
 		util = class
 			now: ->

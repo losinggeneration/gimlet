@@ -9,7 +9,6 @@ classic.get('/hello-world', function()
 	return 'Hello World!'
 end)
 
-
 classic.get("/hello", function(p)
 	for k, v in pairs(p.request.query_params) do
 		p.response:write(string.format('<p><b>%s</b>: <i>%s</i></p>', k, v))

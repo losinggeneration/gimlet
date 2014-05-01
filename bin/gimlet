@@ -4,8 +4,8 @@
 -- Copyright 2014 Harley Laue
 
 pcall(require, 'luarocks.loader')
-lfs = require 'lfs'
-cli = require 'cliargs'
+local lfs = require 'lfs'
+local cli = require 'cliargs'
 require 'moonscript'
 
 cli:set_name('gimlet')
@@ -13,10 +13,11 @@ cli:add_argument('module', 'path to the Gimlet module')
 cli:add_option('-p, --port=PORT', 'port to listen on', '8080')
 cli:add_option('-wp, --worker_processes=WORKER_PROCESSES', 'Number of nginx worker_processes in production mode', '2')
 cli:add_option('-wc, --worker_connections=WORKER_CONNECTIONS', 'Number of nginx worker_connections', '1024')
+cli:add_option('-s, --public=DIR', 'Server static content from HTTP server from public dir. By default, gimlet classic servers static files, but nginx is much faster.', '')
 cli:add_flag('-r, --reload', 'reload the code on every request', false)
 cli:add_flag('-x, --xavante', 'Use Lua based Xavante HTTP server', false)
 
-opts, msg = cli:parse()
+local opts, msg = cli:parse()
 if opts == nil then
 	os.exit(1)
 end
@@ -25,6 +26,7 @@ end
 local app = opts.module:gsub('^(.-)%.lua$', '%1') .. '.lua'
 local port = opts.port
 local reload = opts.reload
+local public = opts.public
 local worker_processes = opts.worker_processes
 local worker_connections = opts.worker_connections
 
@@ -38,21 +40,32 @@ local cwd = lfs.currentdir()
 app = cwd .. '/' .. app:gsub('^.*/(.-)$', '%1')
 
 if opts.xavante then
-	xavante = require 'xavante'
-	wsapi_xavante = require 'wsapi.xavante'
+	local xavante = require 'xavante'
+	local wsapi_xavante = require 'wsapi.xavante'
+	local xavante_filehandler = require 'xavante.filehandler'
+	local rules = {
+		{
+			match = { "^/(.-)$" },
+			-- makeHandler(app) was ovbious simpler, but to allow code
+			-- reloading this seems to be what has to be done
+			with = wsapi_xavante.makeGenericHandler(cwd, {filename = app, reload = reload})
+		}
+	}
+
+	if public ~= '' then
+		table.insert(rules, 1, {
+			match = string.format('^/%s/.*', public),
+			with = xavante_filehandler,
+			params = cwd
+		})
+
+	end
 
 	xavante.HTTP{
 		server = {host = '127.0.0.1', port = port},
 
 		defaultHost = {
-			rules = {
-				{
-					match = { "^/(.-)$" },
-					-- makeHandler(app) was ovbious simpler, but to allow code
-					-- reloading this seems to be what has to be done
-					with = wsapi_xavante.makeGenericHandler(cwd, {filename = app, reload = reload})
-				}
-			}
+			rules = rules
 		}
 	}
 
@@ -64,6 +77,11 @@ else
 		worker_processes = 1
 	else
 		cache = "on"
+	end
+
+	local public_dir = ''
+	if public ~= '' then
+		public_dir = string.format('location /%s { root %s; }', public, cwd)
 	end
 
 	-- OpenResty
@@ -89,8 +107,10 @@ http {
             set $_url "";
             content_by_lua_file "%s";
         }
+
+		%s
     }
-}]], worker_processes, worker_connections, port, cache, app))
+}]], worker_processes, worker_connections, port, cache, app, public_dir))
 	cfg:flush()
 	lfs.mkdir(cwd .. '/logs')
 	os.execute(string.format([[/usr/local/openresty/nginx/sbin/nginx -p "%s" -c "%s"]], cwd, cfg_filename))

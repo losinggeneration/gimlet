@@ -37,7 +37,7 @@ class Gimlet
 	new: =>
 		@action = =>
 		@_handlers = {}
-		@_mapped = {}
+		@_mapped = { gimlet: @ }
 
 	-- Sets the entire middleware table with the given handlers.
 	-- This will clear any current middleware handlers.

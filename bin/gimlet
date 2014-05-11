@@ -6,7 +6,6 @@
 pcall(require, 'luarocks.loader')
 local lfs = require 'lfs'
 local cli = require 'cliargs'
-require 'moonscript'
 
 cli:set_name('gimlet')
 cli:add_argument('module', 'path to the Gimlet module')

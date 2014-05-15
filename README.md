@@ -38,6 +38,8 @@ You will now have a Gimlet application running on your web server of choice on `
   * [Serving Static Files](#serving-static-files)
 * [Middleware Handlers](#middleware-handlers)
   * [Middleware Yielding](#middleware-yielding)
+* [Available Middleware](#available-middleware)
+* [Code Reloading](#code-reloading)
 
 ##Classic Gimlet
  ```gimlet.classic``` tries to provide reasonable defaults for most web applications. The general pieces are requiring ```gimlet.classic```, setting up any additional middleware, adding items to be passed to the routes, setting up your routing information, and running the application.
@@ -185,10 +187,10 @@ classic.use ->
   print "after a request"
 ```
 
-##Available middleware
+##Available Middleware
 * [Render](http://github.com/losinggeneration/gimlet-render) - Handles rendering JSON & HTML templates.
 
-##Code reloading
+##Code Reloading
 Code reloading is accomplished by using ```gimlet -r``` It works well with OpenResty. However, Xavante seems to have some issues currently.
 
 ##About

@@ -31,7 +31,7 @@ if opts == nil then
 		end
 	end
 
-	io.write(os.stderr, msg)
+	io.stderr:write(msg .. "\n")
 	os.exit(1)
 end
 

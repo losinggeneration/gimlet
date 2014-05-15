@@ -1,7 +1,7 @@
 #Gimlet Cocktail
 version **0.1.0**
 
-Gimlet Cocktail is a micro web application framework for OpenResty written in Moonscript. The hope is that it's useful, modular, and makes writting web applications (espcially REST ones) quick and fun.
+Gimlet Cocktail is a micro web application framework for [OpenResty](http://openresty.org/)[[2](#getting-started-note-2)] written in [Moonscript](http://moonscript.org/). The hope is that it's useful, modular, and makes writting web applications (espcially REST ones) quick and fun.
 
 ##Getting started
 
@@ -18,7 +18,7 @@ import get, run from require 'gimlet.classic'
 
 get '/', ->
   'Hello world!'
-  
+
 run!
 ```
 * Now you can compile the code with ```moonc app.moon```
@@ -28,7 +28,7 @@ You will now have a Gimlet application running on your web server of choice on `
 
 [<a name="getting-started-note-1">1</a>] All dependencies can be installed via LuaRocks.
 
-[<a name="getting-started-note-2">2</a>] The default is use use OpenResty. Xavante can be used by using ```gimlet -x app```
+[<a name="getting-started-note-2">2</a>] The default is use use OpenResty. [Xavante](http://keplerproject.github.io/xavante) can be used by using ```gimlet -x app```
 
 ##Table of Contents
 * [Classic Gimlet](#classic-gimlet)
@@ -40,6 +40,7 @@ You will now have a Gimlet application running on your web server of choice on `
   * [Middleware Yielding](#middleware-yielding)
 * [Available Middleware](#available-middleware)
 * [Code Reloading](#code-reloading)
+* [Using Lua](#using-lua)
 
 ##Classic Gimlet
  ```gimlet.classic``` tries to provide reasonable defaults for most web applications. The general pieces are requiring ```gimlet.classic```, setting up any additional middleware, adding items to be passed to the routes, setting up your routing information, and running the application.
@@ -192,6 +193,18 @@ classic.use ->
 
 ##Code Reloading
 Code reloading is accomplished by using ```gimlet -r``` It works well with OpenResty. However, Xavante seems to have some issues currently.
+
+##Using Lua
+Up until this point, Moonscript has been assumed for everything. There's, currently limited, support for using Lua.
+```lua
+local classic = require 'gimlet.classic'
+
+classic.get('/', function()
+        return 'Hello world!'
+end)
+
+classic.run()
+```
 
 ##About
 Gimlet Cocktail is inspired by projcets like [Martini](http://github.com/go-martini/martini) and [Sinatra](https://github.com/sinatra/sinatra). Some code is heavily based off Martini as well.

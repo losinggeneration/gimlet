@@ -1,7 +1,7 @@
 #Gimlet Cocktail
 version **0.1.0**
 
-Gimlet Cocktail is a micro web application framework for [OpenResty](http://openresty.org/)[[2](#getting-started-note-2)] written in [Moonscript](http://moonscript.org/). The hope is that it's useful, modular, and makes writting web applications (espcially REST ones) quick and fun.
+Gimlet Cocktail is a micro web application framework for [OpenResty](http://openresty.org/)[[2](#getting-started-note-2)] written in [Moonscript](http://moonscript.org/). The hope is that it's useful, modular, and makes writing web applications (especially RESTful ones) quick and fun.
 
 ##Getting started
 
@@ -70,7 +70,7 @@ classic.get '/', ->
 ```
 
 ####Return Values
-Handlers can return a string value and that will be sent back as a simple HTTP HTML response. 
+Handlers can return a string value and that will be sent back as a simple HTTP HTML response.
 ```moonscript
 classic.get '/', ->
   "hello world" -- HTTP 200 : "hello world"

@@ -1,8 +1,9 @@
 package = "gimlet-cocktail"
-version = "dev-1"
+version = "0.1.0-1"
 
 source = {
-	url = "git://github.com/losinggeneration/gimlet.git"
+	url = "git://github.com/losinggeneration/gimlet.git",
+	branch = "0.1.0",
 }
 
 description = {
@@ -31,6 +32,7 @@ build = {
 		["gimlet.router"] = "gimlet/router.lua",
 		["gimlet.static"] = "gimlet/static.lua",
 		["gimlet.utils"] = "gimlet/utils.lua",
+		["gimlet.version"] = "gimlet/version.lua",
 		["gimlet.backend.nginx"] = "gimlet/backend/nginx.lua",
 		["gimlet.backend.wsapi"] = "gimlet/backend/wsapi.lua",
 	},

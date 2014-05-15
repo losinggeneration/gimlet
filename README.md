@@ -195,7 +195,7 @@ classic.use ->
 Code reloading is accomplished by using ```gimlet -r``` It works well with OpenResty. However, Xavante seems to have some issues currently.
 
 ##Using Lua
-Up until this point, Moonscript has been assumed for everything. There's, currently limited, support for using Lua.
+Up until this point, Moonscript has been assumed for everything. There's support for using Lua; however, this isn't well tested.
 ```lua
 local classic = require 'gimlet.classic'
 

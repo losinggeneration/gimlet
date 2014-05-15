@@ -1,0 +1,308 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Gimlet Cocktail by losinggeneration</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/losinggeneration/gimlet">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/losinggeneration/gimlet/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/losinggeneration/gimlet/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Gimlet Cocktail</h1>
+          <p>A micro web application framework for OpenResty written in Moonscript inspired by Martini &amp; Sinatra.</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/losinggeneration">losinggeneration</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>
+<a name="gimlet-cocktail" class="anchor" href="#gimlet-cocktail"><span class="octicon octicon-link"></span></a>Gimlet Cocktail</h1>
+
+<p>version <strong>0.1.0</strong></p>
+
+<p>Gimlet Cocktail is a micro web application framework for <a href="http://openresty.org/">OpenResty</a>[<a href="#getting-started-note-2">2</a>] written in <a href="http://moonscript.org/">Moonscript</a>. The hope is that it's useful, modular, and makes writing web applications (especially RESTful ones) quick and fun.</p>
+
+<h2>
+<a name="getting-started" class="anchor" href="#getting-started"><span class="octicon octicon-link"></span></a>Getting started</h2>
+
+<ul>
+<li>First thing to do is to install Moonscript [<a href="#getting-started-note-1">1</a>]</li>
+<li>To use the command line tool, you'll need a couple more dependencies:
+
+<ul>
+<li>lua_cliargs &gt;= 2.1 - For command line argument parsing.</li>
+<li>luafilesystem &gt;= 1.5 - For ensuring the web server is running from the correct location.</li>
+</ul>
+</li>
+<li>Then you should make sure to either have OpenResty installed</li>
+<li><p>(Alternatively) Install wsapi, wsapi-xavante, &amp; xavante.</p></li>
+<li><p>Create a file named app.moon with the following code:</p></li>
+</ul><div class="highlight highlight-moonscript"><pre><span class="k">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">run</span> <span class="k">from</span> <span class="nb">require</span> <span class="s1">'</span><span class="s">gimlet.classic</span><span class="s1">'</span>
+
+<span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="s1">'</span><span class="s">Hello world!</span><span class="s1">'</span>
+
+<span class="n">run</span><span class="o">!</span>
+</pre></div>
+
+<ul>
+<li>Now you can compile the code with <code>moonc app.moon</code>
+</li>
+<li>You can run use the gimlet command to start the server <code>gimlet app</code> [<a href="#getting-started-note-2">2</a>]</li>
+</ul><p>You will now have a Gimlet application running on your web server of choice on <code>http://localhost:8080</code></p>
+
+<p>[<a name="getting-started-note-1">1</a>] All dependencies can be installed via LuaRocks.</p>
+
+<p>[<a name="getting-started-note-2">2</a>] The default is use use OpenResty. <a href="http://keplerproject.github.io/xavante">Xavante</a> can be used by using <code>gimlet -x app</code></p>
+
+<h2>
+<a name="table-of-contents" class="anchor" href="#table-of-contents"><span class="octicon octicon-link"></span></a>Table of Contents</h2>
+
+<ul>
+<li>
+<a href="#classic-gimlet">Classic Gimlet</a>
+
+<ul>
+<li><a href="#handlers">Handlers</a></li>
+<li><a href="#routing">Routing</a></li>
+<li><a href="#services">Services</a></li>
+<li><a href="#serving-static-files">Serving Static Files</a></li>
+</ul>
+</li>
+<li>
+<a href="#middleware-handlers">Middleware Handlers</a>
+
+<ul>
+<li><a href="#middleware-yielding">Middleware Yielding</a></li>
+</ul>
+</li>
+<li><a href="#available-middleware">Available Middleware</a></li>
+<li><a href="#code-reloading">Code Reloading</a></li>
+<li><a href="#using-lua">Using Lua</a></li>
+</ul><h2>
+<a name="classic-gimlet" class="anchor" href="#classic-gimlet"><span class="octicon octicon-link"></span></a>Classic Gimlet</h2>
+
+<p><code>gimlet.classic</code> tries to provide reasonable defaults for most web applications. The general pieces are requiring <code>gimlet.classic</code>, setting up any additional middleware, adding items to be passed to the routes, setting up your routing information, and running the application.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="c1">-- Pull in the Classic Gimlet</span>
+<span class="n">classic</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">'</span><span class="s">gimlet.classic</span><span class="s1">'</span>
+
+<span class="c1">-- Optionally define a variable to be available to all requests</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">map</span> <span class="s2">"</span><span class="s">world</span><span class="s2">"</span><span class="p">,</span> <span class="s1">'</span><span class="s">World</span><span class="s1">'</span>
+
+<span class="c1">-- Define a middleware to use</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">use</span> <span class="kt">(</span><span class="nb">require</span> <span class="s1">'</span><span class="s">gimlet.render</span><span class="s1">'</span><span class="kt">)</span><span class="o">.</span><span class="nc">Render</span><span class="o">!</span>
+
+<span class="c1">-- Define a route '/' with params</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="kt">(</span><span class="n">params</span><span class="kt">)</span> <span class="nf">-&gt;</span>
+  <span class="n">params</span><span class="o">.</span><span class="n">render</span><span class="o">.</span><span class="n">json</span> <span class="nv">hello:</span> <span class="n">params</span><span class="o">.</span><span class="n">world</span>
+
+<span class="c1">-- Run the Gimlet application</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">run</span><span class="o">!</span>
+</pre></div>
+
+<h3>
+<a name="handlers" class="anchor" href="#handlers"><span class="octicon octicon-link"></span></a>Handlers</h3>
+
+<p>Handlers are how you get things done in Gimlet (as they are in Martini.) A handler is a any callable function.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="nb">print</span> <span class="s2">"</span><span class="s">hello world</span><span class="s2">"</span>
+</pre></div>
+
+<h4>
+<a name="return-values" class="anchor" href="#return-values"><span class="octicon octicon-link"></span></a>Return Values</h4>
+
+<p>Handlers can return a string value and that will be sent back as a simple HTTP HTML response.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="s2">"</span><span class="s">hello world</span><span class="s2">"</span> <span class="c1">-- HTTP 200 : "hello world"</span>
+</pre></div>
+
+<p>If the first option is numeric, it changes the HTTP response code.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="mi">418</span><span class="p">,</span> <span class="s2">"</span><span class="s">i'm a teapot</span><span class="s2">"</span> <span class="c1">-- HTTP 418 : "i'm a teapot"</span>
+</pre></div>
+
+<p>If the first option is a table, other things about the HTTP response can be changed, such as Content-Type, headers, and the status.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="s1">'</span><span class="s">Content-Type</span><span class="s1">'</span><span class="o">:</span> <span class="s1">'</span><span class="s">application/json</span><span class="s1">'</span><span class="p">,</span> <span class="nv">status:</span> <span class="mi">401</span><span class="p">,</span> <span class="s">[[{"error": "you're not authorized to access content"}]]</span>
+</pre></div>
+
+<h4>
+<a name="parameters" class="anchor" href="#parameters"><span class="octicon octicon-link"></span></a>Parameters</h4>
+
+<p>The handlers can optionally take a single table parameter.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="kt">(</span><span class="n">p</span><span class="kt">)</span> <span class="nf">-&gt;</span>
+  <span class="n">p</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">now</span><span class="o">!</span>
+</pre></div>
+
+<p>The following are mapped to the table by default:</p>
+
+<ul>
+<li>gimlet - An instance of the Gimlet class</li>
+<li>request - An instance of the HTTP request object</li>
+<li>response - An instance of the HTTP response object.</li>
+<li>utils - An instance of some utility functions</li>
+</ul><p>In addition to these, route globs and named parameters are mapped to the parameter as well. See <a href="#routing">Routing</a> for more information on this.</p>
+
+<h3>
+<a name="routing" class="anchor" href="#routing"><span class="octicon octicon-link"></span></a>Routing</h3>
+
+<p>In Gimlet, a route is an HTTP method paired with a URL-matching pattern. Each route can take one or more handler methods:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- show something</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">patch</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- update something</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">post</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- create something</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">put</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- replace something</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">delete</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- destroy something</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">options</span> <span class="s1">'</span><span class="s">/</span><span class="s1">'</span><span class="p">,</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- http options</span>
+
+<span class="n">classic</span><span class="o">.</span><span class="n">not_found</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- handle 404</span>
+</pre></div>
+
+<p>Routes are matched in the order they are defined. The first route that matches the request is invoked.</p>
+
+<p>Route patterns may include named parameters:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/:name</span><span class="s1">'</span><span class="p">,</span> <span class="kt">(</span><span class="n">p</span><span class="kt">)</span> <span class="nf">-&gt;</span>
+  <span class="s1">'</span><span class="s">hello </span><span class="s1">'</span> <span class="o">..</span> <span class="n">p</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">name</span>
+</pre></div>
+
+<p>Routes can be matched with globs:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">get</span> <span class="s1">'</span><span class="s">/**</span><span class="s1">'</span><span class="p">,</span> <span class="kt">(</span><span class="n">p</span><span class="kt">)</span> <span class="nf">-&gt;</span>
+  <span class="s1">'</span><span class="s">hello </span><span class="s1">'</span> <span class="o">..</span> <span class="n">p</span><span class="o">.</span><span class="n">params</span><span class="kt">[</span><span class="mi">1</span><span class="kt">]</span>
+</pre></div>
+
+<p>Route groups can be added too using the group method:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">group</span> <span class="s1">'</span><span class="s">/books</span><span class="s1">'</span><span class="p">,</span> <span class="kt">(</span><span class="n">r</span><span class="kt">)</span> <span class="nf">-&gt;</span>
+  <span class="n">r</span><span class="o">\</span><span class="n">get</span> <span class="s1">''</span><span class="p">,</span> <span class="n">get_books</span>
+  <span class="n">r</span><span class="o">\</span><span class="n">get</span> <span class="s1">'</span><span class="s">/:id</span><span class="s1">'</span><span class="p">,</span> <span class="n">get_book</span>
+  <span class="n">r</span><span class="o">\</span><span class="n">post</span> <span class="s1">'</span><span class="s">/new</span><span class="s1">'</span><span class="p">,</span> <span class="n">new_book</span>
+  <span class="n">r</span><span class="o">\</span><span class="n">put</span> <span class="s1">'</span><span class="s">/update/:id</span><span class="s1">'</span><span class="p">,</span> <span class="n">update_book</span>
+  <span class="n">r</span><span class="o">\</span><span class="n">delete</span> <span class="s1">'</span><span class="s">/delete/:id</span><span class="s1">'</span><span class="p">,</span> <span class="n">delete_book</span>
+</pre></div>
+
+<h3>
+<a name="services" class="anchor" href="#services"><span class="octicon octicon-link"></span></a>Services</h3>
+
+<p>Services are objects that are available to be injected into a handler's parameters table.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">db</span> <span class="o">=</span> <span class="n">my_database</span><span class="o">!</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">map</span> <span class="s2">"</span><span class="s">db</span><span class="s2">"</span><span class="p">,</span> <span class="n">db</span> <span class="c1">-- the service will be available to all handlers as -&gt; (p) p.db</span>
+<span class="c1">-- ...</span>
+<span class="n">classic</span><span class="o">.</span><span class="n">run</span><span class="o">!</span>
+</pre></div>
+
+<h3>
+<a name="serving-static-files" class="anchor" href="#serving-static-files"><span class="octicon octicon-link"></span></a>Serving Static Files</h3>
+
+<p><code>gimlet.classic</code> automatically serves files from <code>public</code> relative to the main module.</p>
+
+<p>Alternatively, you can let the HTTP server handle static files with <code>gimlet -s static_dir app</code></p>
+
+<h2>
+<a name="middleware-handlers" class="anchor" href="#middleware-handlers"><span class="octicon octicon-link"></span></a>Middleware Handlers</h2>
+
+<p>Middlware handlers sit between the incoming http request and the router. They are, in essence, no different than any other handler in Gimlet. You can add a middleware handler to the stack with:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">use</span> <span class="nf">-&gt;</span>
+  <span class="c1">-- do middleware stuff</span>
+</pre></div>
+
+<p>You also have full control over the middleware stack with the <code>Gimlet\handlers</code> function. This will replace all handlers that were previously set:</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">handlers</span> <span class="n">middleware1</span><span class="p">,</span> <span class="n">middleware2</span><span class="p">,</span> <span class="n">middleware3</span>
+</pre></div>
+
+<p>Middleware handlers tend to work well for things like: logging, authorization, authentication, sessions, errors, or anything else that needs to happen before and/or after an HTTP request.</p>
+
+<h3>
+<a name="middleware-yielding" class="anchor" href="#middleware-yielding"><span class="octicon octicon-link"></span></a>Middleware Yielding</h3>
+
+<p>During a middleware handler call, the middleware can optionally call <code>coroutine.yield</code>. This allows somet things to happen before and after the request.</p>
+
+<div class="highlight highlight-moonscript"><pre><span class="n">classic</span><span class="o">.</span><span class="n">use</span> <span class="nf">-&gt;</span>
+  <span class="nb">print</span> <span class="s2">"</span><span class="s">before a request</span><span class="s2">"</span>
+
+  <span class="nb">coroutine.yield</span><span class="o">!</span>
+
+  <span class="nb">print</span> <span class="s2">"</span><span class="s">after a request</span><span class="s2">"</span>
+</pre></div>
+
+<h2>
+<a name="available-middleware" class="anchor" href="#available-middleware"><span class="octicon octicon-link"></span></a>Available Middleware</h2>
+
+<ul>
+<li>
+<a href="http://github.com/losinggeneration/gimlet-render">Render</a> - Handles rendering JSON &amp; HTML templates.</li>
+</ul><h2>
+<a name="code-reloading" class="anchor" href="#code-reloading"><span class="octicon octicon-link"></span></a>Code Reloading</h2>
+
+<p>Code reloading is accomplished by using <code>gimlet -r</code> It works well with OpenResty. However, Xavante seems to have some issues currently.</p>
+
+<h2>
+<a name="using-lua" class="anchor" href="#using-lua"><span class="octicon octicon-link"></span></a>Using Lua</h2>
+
+<p>Up until this point, Moonscript has been assumed for everything. There's support for using Lua; however, this isn't well tested.</p>
+
+<div class="highlight highlight-lua"><pre><span class="kd">local</span> <span class="n">classic</span> <span class="o">=</span> <span class="nb">require</span> <span class="s1">'</span><span class="s">gimlet.classic'</span>
+
+<span class="n">classic</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'</span><span class="s">/'</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s1">'</span><span class="s">Hello world!'</span>
+<span class="k">end</span><span class="p">)</span>
+
+<span class="n">classic</span><span class="p">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+
+<h2>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h2>
+
+<p>Gimlet Cocktail is inspired by projcets like <a href="http://github.com/go-martini/martini">Martini</a> and <a href="https://github.com/sinatra/sinatra">Sinatra</a>. Some code is heavily based off Martini as well.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>

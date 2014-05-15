@@ -89,7 +89,7 @@ The handlers can optionally take a single table parameter.
 ```moonscript
 classic.get '/', (p) ->
   p.utils.now!
-``
+```
 The following are mapped to the table by default:
 * gimlet - An instance of the Gimlet class
 * request - An instance of the HTTP request object

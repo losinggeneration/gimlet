@@ -185,10 +185,10 @@ classic.use ->
   print "after a request"
 ```
 
-###Available middleware
+##Available middleware
 * [Render](http://github.com/losinggeneration/gimlet-render) - Handles rendering JSON & HTML templates.
 
-###Code reloading
+##Code reloading
 Code reloading is accomplished by using ```gimlet -r``` It works well with OpenResty. However, Xavante seems to have some issues currently.
 
 ##About

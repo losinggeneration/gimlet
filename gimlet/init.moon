@@ -61,7 +61,12 @@ class Gimlet
 		table.insert @_handlers, handler
 
 	map: (name, value) =>
-		@_mapped[name] = value
+		switch type name
+			when "string"
+				@_mapped[name] = value
+			when "table"
+				n, v = pairs(name)(name)
+				@_mapped[n] = v
 
 	-- Run the application
 	run: =>

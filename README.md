@@ -154,6 +154,8 @@ Services are objects that are available to be injected into a handler's paramete
 ```moonscript
 db = my_database!
 classic.map "db", db -- the service will be available to all handlers as -> (p) p.db
+-- Alternative
+classic.map :db -- Same as above, but you can pass a table with a single {k: v} into map
 -- ...
 classic.run!
 ```

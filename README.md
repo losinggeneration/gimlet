@@ -1,5 +1,5 @@
 #Gimlet Cocktail
-version **0.1.0**
+version **0.1.1-dev**
 
 Gimlet Cocktail is a micro web application framework for [OpenResty](http://openresty.org/)[[2](#getting-started-note-2)] written in [Moonscript](http://moonscript.org/). The hope is that it's useful, modular, and makes writing web applications (especially RESTful ones) quick and fun.
 

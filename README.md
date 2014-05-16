@@ -160,6 +160,13 @@ classic.run!
 
 ###Serving Static Files
 ```gimlet.classic``` automatically serves files from ```public``` relative to the main module.
+You can add additional directories to serve as well:
+```moonscript
+import Static from require 'gimlet.static'
+classic.use Static '/css'
+```
+Note the '/' at the beginning is needed to path match the url. This may change in the future.
+If you plan on serving images from this middleware, you should install ```mimetypes```
 
 Alternatively, you can let the HTTP server handle static files with ```gimlet -s static_dir app```
 

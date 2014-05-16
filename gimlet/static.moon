@@ -13,7 +13,7 @@ Static = (path, ...) ->
 				mimetypes = require 'mimetypes'
 				p.response\set_options {'Content-Type': mimetypes.guess filename}
 
-			args[1].log\write string.format '%s - [Static] Serving %s\n', os.date('%F %T', p.utils.now!), filename if #args and args[1].log
+			args[1].log\write string.format '%s - [Static] Serving %s\n', os.date('%F %T', p.utils.now!), filename if #args > 0 and args[1].log
 			p.response\write f\read '*a'
 
 			false

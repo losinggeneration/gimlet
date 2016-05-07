@@ -1,46 +1,40 @@
+common = require 'gimlet.backend.common'
+
+request = class extends common.request
+	url_path: ngx.var.uri
+	request_uri: ngx.var.request_uri
+	query_params: ngx.req.get_uri_args!
+	method: ngx.req.get_method!
+	post_args: if method == 'POST'
+			ngx.req.read_body!
+			ngx.req.get_post_args!
+		else
+			{}
+
+response = class extends common.response
+	new: (content_type = "text/html") =>
+		ngx.header["Content-Type"] = content_type
+
+	write: (...) => ngx.print ...
+
+	set_options: (options) =>
+		ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
+		unless options.headers == nil
+			ngx.headers[k] = v for k, v in pairs(options.headers)
+		@status options.status unless options.status == nil
+
+	status: (s) =>
+		ngx.status = s unless s == nil
+		ngx.status
+
+utils = class extends common.utils
+	now: -> ngx.now!
+
 dispatch = (gimlet) ->
-	unless gimlet.content_type
-		ngx.header["Content-Type"] = "text/html"
-	else
-		ngx.header["Content-Type"] = gimlet.content_type
-
-	res = class
-		write: (...) =>
-			ngx.print ...
-
-		set_options: (options) =>
-			ngx.header["Content-Type"] = options["Content-Type"] if options["Content-Type"]
-			unless options.headers == nil
-				ngx.headers[k] = v for k, v in pairs(options.headers)
-			@status options.status unless options.status == nil
-
-		status: (s) =>
-			ngx.status = s unless s == nil
-			ngx.status
-
-	req = class
-		new: =>
-			@url_path = ngx.var.uri
-			@request_uri = ngx.var.request_uri
-			@query_params = ngx.req.get_uri_args!
-			@method = ngx.req.get_method!
-			@post_args = {}
-			if @method == 'POST'
-				ngx.req.read_body!
-				@post_args = ngx.req.get_post_args!
-
-	util = class
-		now: ->
-			ngx.now!
-
-	request = req!
-	response = res!
-	utils = util!
-
 	mapped = with gimlet._mapped
-		.request = request
-		.response = response
-		.utils = utils
+		.request = request!
+		.response = response gimlet.content_type
+		.utils = utils!
 
 	coros = [coroutine.create middleware for middleware in *gimlet._handlers]
 	local finish
@@ -50,7 +44,7 @@ dispatch = (gimlet) ->
 		else
 			_, finish = coroutine.resume middleware, mapped
 
-	gimlet\action mapped, request.method, request.url_path unless finish == false
+	gimlet\action mapped, mapped.request.method, mapped.request.url_path unless finish == false
 
 	c = true
 	while c
@@ -62,6 +56,6 @@ dispatch = (gimlet) ->
 					coroutine.resume middleware, mapped
 					c = true
 
-	response\status!
+	mapped.response\status!
 
 {:dispatch}

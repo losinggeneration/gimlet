@@ -31,6 +31,7 @@ build = {
 		["gimlet.router"] = "gimlet/router.lua",
 		["gimlet.static"] = "gimlet/static.lua",
 		["gimlet.utils"] = "gimlet/utils.lua",
+		["gimlet.backend.common"] = "gimlet/backend/common.lua",
 		["gimlet.backend.nginx"] = "gimlet/backend/nginx.lua",
 		["gimlet.backend.wsapi"] = "gimlet/backend/wsapi.lua",
 	},

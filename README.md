@@ -1,9 +1,9 @@
-#Gimlet Cocktail
+# Gimlet Cocktail
 version **0.1.1-dev**
 
 Gimlet Cocktail is a micro web application framework for [OpenResty](http://openresty.org/)[[2](#getting-started-note-2)] written in [Moonscript](http://moonscript.org/). The hope is that it's useful, modular, and makes writing web applications (especially RESTful ones) quick and fun.
 
-##Getting started
+## Getting started
 
 * First thing to do is to install Moonscript [[1](#getting-started-note-1)]
 * To use the command line tool, you'll need a couple more dependencies:
@@ -30,7 +30,7 @@ You will now have a Gimlet application running on your web server of choice on `
 
 [<a name="getting-started-note-2">2</a>] The default is use use OpenResty. [Xavante](http://keplerproject.github.io/xavante) can be used by using ```gimlet -x app```
 
-##Table of Contents
+## Table of Contents
 * [Classic Gimlet](#classic-gimlet)
   * [Handlers](#handlers)
   * [Routing](#routing)
@@ -42,7 +42,7 @@ You will now have a Gimlet application running on your web server of choice on `
 * [Code Reloading](#code-reloading)
 * [Using Lua](#using-lua)
 
-##Classic Gimlet
+## Classic Gimlet
  ```gimlet.classic``` tries to provide reasonable defaults for most web applications. The general pieces are requiring ```gimlet.classic```, setting up any additional middleware, adding items to be passed to the routes, setting up your routing information, and running the application.
 ```moonscript
 -- Pull in the Classic Gimlet
@@ -62,14 +62,14 @@ classic.get '/', (params) ->
 classic.run!
 ```
 
-###Handlers
+### Handlers
 Handlers are how you get things done in Gimlet (as they are in Martini.) A handler is a any callable function.
 ```moonscript
 classic.get '/', ->
   print "hello world"
 ```
 
-####Return Values
+#### Return Values
 Handlers can return a string value and that will be sent back as a simple HTTP HTML response.
 ```moonscript
 classic.get '/', ->
@@ -87,7 +87,7 @@ classic.get '/', ->
   'Content-Type': 'application/json', status: 401, [[{"error": "you're not authorized to access content"}]]
 ```
 
-####Parameters
+#### Parameters
 The handlers can optionally take a single table parameter.
 ```moonscript
 classic.get '/', (p) ->
@@ -101,7 +101,7 @@ The following are mapped to the table by default:
 
 In addition to these, route globs and named parameters are mapped to the parameter as well. See [Routing](#routing) for more information on this.
 
-###Routing
+### Routing
 In Gimlet, a route is an HTTP method paired with a URL-matching pattern. Each route can take one or more handler methods:
 ```moonscript
 classic.get '/', ->
@@ -148,7 +148,7 @@ classic.group '/books', (r) ->
   r\put '/update/:id', update_book
   r\delete '/delete/:id', delete_book
 ```
-###Services
+### Services
 Services are objects that are available to be injected into a handler's parameters table.
 
 ```moonscript
@@ -160,7 +160,7 @@ classic.map :db -- Same as above, but you can pass a table with a single {k: v} 
 classic.run!
 ```
 
-###Serving Static Files
+### Serving Static Files
 ```gimlet.classic``` automatically serves files from ```public``` relative to the main module.
 You can add additional directories to serve as well:
 ```moonscript
@@ -172,7 +172,7 @@ If you plan on serving images from this middleware, you should install ```mimety
 
 Alternatively, you can let the HTTP server handle static files with ```gimlet -s static_dir app```
 
-##Middleware Handlers
+## Middleware Handlers
 Middlware handlers sit between the incoming http request and the router. They are, in essence, no different than any other handler in Gimlet. You can add a middleware handler to the stack with:
 ```moonscript
 classic.use ->
@@ -186,7 +186,7 @@ classic.handlers middleware1, middleware2, middleware3
 
 Middleware handlers tend to work well for things like: logging, authorization, authentication, sessions, errors, or anything else that needs to happen before and/or after an HTTP request.
 
-###Middleware Yielding
+### Middleware Yielding
 During a middleware handler call, the middleware can optionally call ```coroutine.yield```. This allows somet things to happen before and after the request.
 ```moonscript
 classic.use ->
@@ -197,13 +197,13 @@ classic.use ->
   print "after a request"
 ```
 
-##Available Middleware
+## Available Middleware
 * [Render](http://github.com/losinggeneration/gimlet-render) - Handles rendering JSON & HTML templates.
 
-##Code Reloading
+## Code Reloading
 Code reloading is accomplished by using ```gimlet -r``` It works well with OpenResty. However, Xavante seems to have some issues currently.
 
-##Using Lua
+## Using Lua
 Up until this point, Moonscript has been assumed for everything. There's support for using Lua; however, this isn't well tested.
 ```lua
 local classic = require 'gimlet.classic'
@@ -215,6 +215,6 @@ end)
 classic.run()
 ```
 
-##About
+## About
 Gimlet Cocktail is inspired by projcets like [Martini](http://github.com/go-martini/martini) and [Sinatra](https://github.com/sinatra/sinatra). Some code is heavily based off Martini as well.
 
